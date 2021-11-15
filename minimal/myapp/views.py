@@ -28,8 +28,14 @@ def get_size(start_path = '.'):
             # skip if it is symbolic link
             if not os.path.islink(fp):
                 total_size += os.path.getsize(fp)
-
-    return total_size
+    class Usage:
+        used = None
+        total = None
+        
+    obj = Usage()
+    obj.used = total_size
+    obj.total = 512 * 1024 * 1024
+    return obj
 
 def my_view(request):
     message = 'Upload as many files as you want!'
@@ -72,9 +78,9 @@ def videos(request):
     # for doc in documents:
     #     doc.delete()
     
-    # disk_usage = get_size(os.path.expanduser("~"))
+    disk_usage = get_size(os.path.expanduser("~"))
     # disk_usage = get_size(settings.MEDIA_ROOT)
-    disk_usage = shutil.disk_usage(os.path.expanduser("~"))
+    # disk_usage = shutil.disk_usage(os.path.expanduser("~"))
     # disk_usage = shutil.disk_usage(settings.MEDIA_ROOT)
     disk_usage_perc = int(disk_usage.used / disk_usage.total * 100) 
     
