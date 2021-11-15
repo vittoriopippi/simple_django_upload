@@ -18,9 +18,9 @@
     <div class="container" style="max-width: 550px;">
     <div class="card my-4">
             <div class="card-body">
-            <h5>Utilizzo disco: {{ disk_usage_mb }}/512 Mb</h5>
+            <h5>Utilizzo disco: {{ disk_usage.used|filesizeformat }}/{{ disk_usage.total|filesizeformat }}</h5>
         <div class="progress">
-            <div class="progress-bar bg-danger" role="progressbar" style="width: {{ disk_usage }}%" aria-valuenow="{{ disk_usage }}" aria-valuemin="0" aria-valuemax="100"></div>
+            <div class="progress-bar bg-danger" role="progressbar" style="width: {{ disk_usage_perc }}%" aria-valuenow="{{ disk_usage_perc }}" aria-valuemin="0" aria-valuemax="100"></div>
         </div>
     </div>
         </div>
