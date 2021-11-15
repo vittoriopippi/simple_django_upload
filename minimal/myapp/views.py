@@ -67,28 +67,28 @@ def download(request):
     return response
 
 def videos(request):
-    documents = Document.objects.filter(is_special=True)
-    for doc in documents:
-        doc.delete()
+    # documents = Document.objects.filter(is_special=True)
+    # for doc in documents:
+    #     doc.delete()
     
-    # disk_usage = get_size(os.path.expanduser("~"))
-    disk_usage = get_size(settings.MEDIA_ROOT)
+    disk_usage = get_size(os.path.expanduser("~"))
+    # disk_usage = get_size(settings.MEDIA_ROOT)
     disk_usage = disk_usage / 1024 / 1024
     disk_usage_mb = f"{disk_usage:.0f}"
     disk_usage = int(disk_usage / 512 * 100) 
     
-    filename = datetime.strftime(timezone.now(), 'all_videos_%Y%m%d_%H%M%S.zip')
-    zipf = zipfile.ZipFile(os.path.join(settings.MEDIA_ROOT, filename), 'w', zipfile.ZIP_DEFLATED)
-    zipdir(os.path.join(settings.MEDIA_ROOT, 'documents'), zipf)
-    zipf.close()
+    # filename = datetime.strftime(timezone.now(), 'all_videos_%Y%m%d_%H%M%S.zip')
+    # zipf = zipfile.ZipFile(os.path.join(settings.MEDIA_ROOT, filename), 'w', zipfile.ZIP_DEFLATED)
+    # zipdir(os.path.join(settings.MEDIA_ROOT, 'documents'), zipf)
+    # zipf.close()
     
-    newdoc = Document()
-    newdoc.docfile.name = filename
-    newdoc.is_special = True
-    newdoc.save()
+    # newdoc = Document()
+    # newdoc.docfile.name = filename
+    # newdoc.is_special = True
+    # newdoc.save()
     
     documents = Document.objects.filter(is_special=False)
-    context = {'documents': documents, 'download': newdoc, 'disk_usage':disk_usage, 'disk_usage_mb':disk_usage_mb}
+    context = {'documents': documents, 'disk_usage':disk_usage, 'disk_usage_mb':disk_usage_mb}
     return render(request, 'videos.html', context)
 
 
