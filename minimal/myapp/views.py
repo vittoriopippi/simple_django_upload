@@ -9,6 +9,28 @@ from django.utils import timezone
 from datetime import datetime
 import shutil
 
+class Usage:
+    used = None
+    total = None
+    
+    def __init__(self, used, total):
+        self.used, self.total = used, total
+    
+    def __add__(self, o):
+        self.used += o.used
+        return self
+
+def get_size(start_path='.', exclude=[]):
+    total_size = 0
+    for dirpath, dirnames, filenames in os.walk(start_path):
+        dirnames[:] = [d for d in dirnames if d not in exclude]
+        for f in filenames:
+            fp = os.path.join(dirpath, f)
+            # skip if it is symbolic link
+            if not os.path.islink(fp):
+                total_size += os.path.getsize(fp)
+    return Usage(total_size, 512 * 1024 * 1024)
+
 def zipdir(path, ziph):
     # ziph is zipfile handle
     for root, dirs, files in os.walk(path):
@@ -19,23 +41,6 @@ def zipdir(path, ziph):
                     os.path.join(root, file),
                     os.path.join(path, '..'))
                 )
-            
-def get_size(start_path = '.'):
-    total_size = 0
-    for dirpath, dirnames, filenames in os.walk(start_path):
-        for f in filenames:
-            fp = os.path.join(dirpath, f)
-            # skip if it is symbolic link
-            if not os.path.islink(fp):
-                total_size += os.path.getsize(fp)
-    class Usage:
-        used = None
-        total = None
-        
-    obj = Usage()
-    obj.used = total_size
-    obj.total = 512 * 1024 * 1024
-    return obj
 
 def my_view(request):
     message = 'Upload as many files as you want!'
@@ -78,8 +83,8 @@ def videos(request):
     # for doc in documents:
     #     doc.delete()
     
-    disk_usage = get_size(os.path.expanduser("~"))
-    # disk_usage = get_size(settings.MEDIA_ROOT)
+    # disk_usage = get_size(os.path.expanduser("~"))
+    disk_usage = get_size(settings.MEDIA_ROOT) + DISK_USED
     # disk_usage = shutil.disk_usage(os.path.expanduser("~"))
     # disk_usage = shutil.disk_usage(settings.MEDIA_ROOT)
     disk_usage_perc = int(disk_usage.used / disk_usage.total * 100) 
@@ -98,4 +103,5 @@ def videos(request):
     context = {'documents': documents, 'disk_usage':disk_usage, 'disk_usage_perc':disk_usage_perc}
     return render(request, 'videos.html', context)
 
-
+print('Loading disk usage...')
+DISK_USED = get_size(os.path.expanduser("~"), exclude=[settings.MEDIA_ROOT])
