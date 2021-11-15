@@ -67,8 +67,12 @@ def download(request):
     return response
 
 def videos(request):
-    disk_usage = get_size(os.path.expanduser("~"))
-    # disk_usage = get_size(settings.MEDIA_ROOT)
+    documents = Document.objects.filter(is_special=True)
+    for doc in documents:
+        doc.delete()
+    
+    # disk_usage = get_size(os.path.expanduser("~"))
+    disk_usage = get_size(settings.MEDIA_ROOT)
     disk_usage = disk_usage / 1024 / 1024
     disk_usage_mb = f"{disk_usage:.0f}"
     disk_usage = int(disk_usage / 512 * 100) 
