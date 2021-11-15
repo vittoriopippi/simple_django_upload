@@ -16,13 +16,23 @@
 
 <body class="bg-warning">
     <div class="container" style="max-width: 550px;">
+    <div class="card my-4">
+            <div class="card-body">
+            <h5>Utilizzo disco: {{ disk_usage_mb }}/512 Mb</h5>
+        <div class="progress">
+            <div class="progress-bar bg-danger" role="progressbar" style="width: {{ disk_usage }}%" aria-valuenow="{{ disk_usage }}" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+    </div>
+        </div>
+    </div>
+    <div class="container" style="max-width: 550px;">
         <div class="card my-4">
             <div class="card-body">
                 {% if documents %}
                 <h5>Video caricati finora:</h5>
                 <div class="list-group">
                     {% for document in documents %}
-                    <a href="{{ document.docfile.url }}" class="list-group-item list-group-item-action">{{ document.filename }}</a>
+                    <a href="{{ document.docfile.url }}" class="list-group-item list-group-item-action">{{ document.filename }} ({{ document.docfile.size|filesizeformat }})</a>
                     {% comment %} <li class="list-group-item">{{ document.filename }}</li> {% endcomment %}
                     {% endfor %}
                 </div>

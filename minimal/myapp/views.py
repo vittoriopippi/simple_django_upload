@@ -18,6 +18,17 @@ def zipdir(path, ziph):
                     os.path.join(root, file),
                     os.path.join(path, '..'))
                 )
+            
+def get_size(start_path = '.'):
+    total_size = 0
+    for dirpath, dirnames, filenames in os.walk(start_path):
+        for f in filenames:
+            fp = os.path.join(dirpath, f)
+            # skip if it is symbolic link
+            if not os.path.islink(fp):
+                total_size += os.path.getsize(fp)
+
+    return total_size
 
 def my_view(request):
     message = 'Upload as many files as you want!'
@@ -56,6 +67,12 @@ def download(request):
     return response
 
 def videos(request):
+    # disk_usage = get_size(os.path.expanduser("~"))
+    disk_usage = get_size(settings.MEDIA_ROOT)
+    disk_usage = disk_usage / 1024 / 1024
+    disk_usage_mb = f"{disk_usage:.0f}"
+    disk_usage = int(disk_usage / 512 * 100) 
+    
     filename = datetime.strftime(timezone.now(), 'all_videos_%Y%m%d_%H%M%S.zip')
     zipf = zipfile.ZipFile(os.path.join(settings.MEDIA_ROOT, filename), 'w', zipfile.ZIP_DEFLATED)
     zipdir(os.path.join(settings.MEDIA_ROOT, 'documents'), zipf)
@@ -67,7 +84,7 @@ def videos(request):
     newdoc.save()
     
     documents = Document.objects.filter(is_special=False)
-    context = {'documents': documents, 'download': newdoc}
+    context = {'documents': documents, 'download': newdoc, 'disk_usage':disk_usage, 'disk_usage_mb':disk_usage_mb}
     return render(request, 'videos.html', context)
 
 
